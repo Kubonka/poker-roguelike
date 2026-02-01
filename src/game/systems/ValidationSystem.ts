@@ -11,9 +11,9 @@ export class ValidationSystem {
   ) {
     this.bus.on("CARD_PLACED", ({ row, col }) => this.checkLine(row, col));
   }
-  static canPlace(board: Board, row: number, col: number): boolean {
-    return board.getCell(row, col).isEmpty();
-  }
+  // static canPlace(): boolean {
+  //   return Cell.isEmpty();
+  // }
   public checkLine(row: number, col: number) {
     const rowCards: Card[] = this.board
       .getRow(row)
@@ -22,20 +22,15 @@ export class ValidationSystem {
       .getCol(col)
       .map((c) => c.card) as Card[];
 
-    console.log("checkLine", rowCards, colCards);
-
     if (rowCards.length === 5) {
-      console.log("row llena !");
       const resultRow = this.solvePokerHand(rowCards);
       this.bus.emit("LINE_COMPLETED", {
         lineType: "row",
         index: row,
         rank: resultRow,
       });
-      console.log("row: ", resultRow);
     }
     if (colCards.length === 5) {
-      console.log("col llena !");
       const resultCol = this.solvePokerHand(colCards);
 
       this.bus.emit("LINE_COMPLETED", {
@@ -43,8 +38,6 @@ export class ValidationSystem {
         index: col,
         rank: resultCol,
       });
-
-      console.log("col: ", resultCol);
     }
   }
 

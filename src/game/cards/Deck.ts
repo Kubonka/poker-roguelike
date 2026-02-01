@@ -6,6 +6,8 @@ export class Deck extends Phaser.GameObjects.Container {
   cards: Card[] = [];
   drawPile: Card[] = [];
   discardPile: Card[] = [];
+  currentCard: Card | null = null;
+  private discardPilePos: Coord = { x: 1900, y: 70 };
   constructor(
     scene: Phaser.Scene,
     private bus: EventBus<GameEventMap>,
@@ -14,14 +16,19 @@ export class Deck extends Phaser.GameObjects.Container {
   ) {
     super(scene, x, y);
     scene.add.existing(this);
+    this.setPosition(x, y);
     this.initCards();
+    this.bus.on("CARD_REMOVED", (payload: { card: Card }) =>
+      this.handleCardRemoved(payload.card),
+    );
   }
   private initCards() {
     const suits: CardSuit[] = ["clubs", "diamonds", "hearts", "spades"];
     const values: CardValue[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
     suits.forEach((s) =>
       values.forEach((v) => {
-        const newCard = new Card(this.scene, 0, 0, v);
+        const newCard = new Card(this.scene, 0, 0);
+        newCard.setValue(v);
         newCard.setSuit([s]);
         this.cards.push(newCard);
         this.add(newCard);
@@ -32,18 +39,39 @@ export class Deck extends Phaser.GameObjects.Container {
   public addCard(card: Card) {
     this.cards.push(card);
   }
-  public draw(): Card | null {
-    console.log("count : ", this.drawPile.length);
-    if (this.drawPile.length === 0) {
-      console.log("entra reshufle");
+  private handleCardRemoved(card: Card) {
+    this.discardPile.push(card);
+    card.moveToDiscardPile(this.discardPilePos);
+  }
+  // public draw(): Card {
+  //   console.log("count : ", this.drawPile.length);
+  //   if (this.drawPile.length === 0) {
+  //     console.log("entra reshufle");
+  //     this.reShuffle();
+  //     console.log("sale reshufle");
+  //   }
+  //   const card: Card = this.drawPile.pop() as Card;
+  //   console.log("- * -", this.drawPile[this.drawPile.length - 1].value);
+  //   if (card) {
+  //     console.log("EMIT");
+  //     this.bus.emit("CARD_DRAWN", { card: card });
+  //     console.log("EMIT2");
+  //   }
+  //   return card;
+  // }
+  // public consumeCurrentCard(): Card | null {
+  //   const card = this.currentCard;
+  //   this.currentCard = null;
+  //   return card;
+  // }
+  public draw() {
+    //const card = new Card(this.scene, 0, 0);
+    if (!this.drawPile.length) {
       this.reShuffle();
-      console.log("sale reshufle");
     }
-    const card = this.drawPile.pop() ?? null;
-    if (card) {
-      this.bus.emit("CARD_DRAWN", { cardId: card.cardId });
-    }
-    return card;
+    this.currentCard = this.drawPile.pop() as Card;
+    //console.log(this.currentCard.cardId);
+    this.bus.emit("CARD_DRAWN", { card: this.currentCard });
   }
   private reShuffle() {
     //todo hacer bien el reshuffle  NO ESTOY USANDO DISCARD PILE

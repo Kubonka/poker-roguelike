@@ -4,6 +4,7 @@ import { SCORE_TABLE } from "../core/ScoreTable";
 import { TurnSystem } from "./TurnSystem";
 
 export class ScoreSystem {
+  private totalScore = 0;
   constructor(
     private bus: EventBus<GameEventMap>,
     private turn: TurnSystem,

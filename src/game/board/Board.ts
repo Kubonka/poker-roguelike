@@ -19,13 +19,12 @@ export class Board extends Phaser.GameObjects.Container {
     super(scene, x, y);
     scene.add.existing(this);
     this.deck = deck;
-    this.bus.on("PLACE_CARD", ({ row, col }) => {
-      this.placeCard(row, col);
-    });
+    // this.bus.on("PLACE_CARD", ({ cell, card }) => {
+    //   this.placeCard(card, cell);
+    // });
 
     this.cells = Array.from({ length: rows }, (_, row) =>
       Array.from({ length: cols }, (_, col) => {
-        console.log(row, col);
         const cell = new Cell(scene, bus, row, col, col * 140, row * 175);
         this.add(cell);
         return cell;
@@ -44,30 +43,36 @@ export class Board extends Phaser.GameObjects.Container {
       cell.removeCard();
     }
   }
-  private placeCard(row: number, col: number): void {
-    const xOffset = -49;
-    const yOffset = -70;
-    const card = this.deck.draw();
-    if (!card) return;
-
-    const cell = this.cells[row][col];
-    cell.card = card;
-    this.add(card);
-
-    const bounds = cell.getBounds();
-    const worldX = bounds.centerX;
-    const worldY = bounds.centerY;
-    const localX = worldX - this.x;
-    const localY = worldY - this.y;
-
-    card.setPosition(localX + xOffset, localY + yOffset);
-    this.bringToTop(card);
-    this.bus.emit("CARD_PLACED", { cardId: card.cardId, row, col });
-    console.log(
-      "NEXT CARD : ",
-      this.deck.drawPile[this.deck.drawPile.length - 1].value,
-    );
+  placeCard(card: Card, cell: Cell) {
+    card.moveToCell(cell);
+    cell.setCard(card);
   }
+  // private placeCard(row: number, col: number, card: Card): void {
+  //   const xOffset = -49;
+  //   const yOffset = -70;
+  //   //const card = this.deck.draw();
+  //   console.log("CARD", card);
+  //   if (!card) return;
+
+  //   const cell = this.cells[row][col];
+  //   cell.card = card;
+  //   this.add(card);
+
+  //   const bounds = cell.getBounds();
+  //   const worldX = bounds.centerX;
+  //   const worldY = bounds.centerY;
+  //   const localX = worldX - this.x;
+  //   const localY = worldY - this.y;
+
+  //   cell.card.setPosition(localX + xOffset, localY + yOffset);
+  //   this.bringToTop(card);
+  //   this.bus.emit("CARD_PLACED", { card: card, row, col });
+  //   this.deck.draw();
+  //   console.log(
+  //     "NEXT CARD : ",
+  //     this.deck.drawPile[this.deck.drawPile.length - 1].value,
+  //   );
+  // }
   public getRow(row: number): Cell[] {
     const newArr: Cell[] = [];
     for (let j = 0; j < this.cells.length; j++) {

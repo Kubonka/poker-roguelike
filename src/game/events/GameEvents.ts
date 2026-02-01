@@ -7,4 +7,6 @@ export interface GameEvents {
   GAME_OVER: {
     reason: "no_moves" | "blocked_board" | "deck_empty";
   };
+  DECK_RESHUFFLED: void;
+  TEST_COMPLETE: undefined;
 }

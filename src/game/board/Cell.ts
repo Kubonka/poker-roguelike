@@ -25,17 +25,18 @@ export class Cell extends Phaser.GameObjects.Container {
     const offsetX = 15;
     const offsetY = 13;
     this.bgSprite.setPosition(x - offsetX, y - offsetY);
-    this.bgSprite.setTint(230);
+    this.bgSprite.setTint(120);
     this.add(this.bgSprite);
     this.bgSprite.setInteractive();
     this.bgSprite.on("pointerdown", () => {
-      bus.emit("CELL_CLICKED", { row, col });
+      bus.emit("CELL_CLICKED", { cell: this });
     });
   }
 
   removeCard() {
     if (!this.card) return;
-    this.card.destroy();
+    //this.card.destroy();
+    this.bus.emit("CARD_REMOVED", { card: this.card });
     this.card = null;
   }
 
@@ -48,5 +49,14 @@ export class Cell extends Phaser.GameObjects.Container {
       x: bounds.centerX,
       y: bounds.centerY,
     };
+  }
+  setCard(card: Card) {
+    this.card = card;
+  }
+  public getRow(): number {
+    return this.row;
+  }
+  public getCol(): number {
+    return this.col;
   }
 }

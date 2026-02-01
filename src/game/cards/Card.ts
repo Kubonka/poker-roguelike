@@ -13,12 +13,7 @@ export class Card extends Phaser.GameObjects.Container {
   //mvp 2 > add TAG
   //tagImg:Phaser.GameObjects.Sprite;
   //tag:string
-  constructor(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    initialValue: CardValue = 1,
-  ) {
+  constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
     // //*ID
     this.cardId = Card.nextId++;
@@ -31,7 +26,7 @@ export class Card extends Phaser.GameObjects.Container {
     // //*SUIT
     //this.setSuit([]);
     // //*VALUE
-    this.setValue(initialValue);
+    //this.setValue(initialValue);
 
     this.setInteractive();
 
@@ -151,9 +146,16 @@ export class Card extends Phaser.GameObjects.Container {
   }
   public moveToCell(cell: Cell) {
     const { x, y } = cell.getCenterWorldPosition();
-    const xOffset = -20;
-    const yOffset = -20;
+    const xOffset = -50;
+    const yOffset = -70;
 
     this.setPosition(x + xOffset, y + yOffset);
+  }
+  public moveToDiscardPile({ x, y }: Coord) {
+    this.setPosition(x, y);
+  }
+  public copyFrom(targetCard: Card) {
+    targetCard.value.forEach((v) => this.setValue(v));
+    this.setSuit([...targetCard.suit]);
   }
 }

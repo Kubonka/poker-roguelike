@@ -1,17 +1,12 @@
+import { Cell } from "../board/Cell";
+
 export interface BoardEvents {
   CELL_CLICKED: {
-    row: number;
-    col: number;
+    cell: Cell;
   };
-
   LINE_COMPLETED: {
     lineType: "row" | "col";
     index: number;
     rank: PokerRank;
-  };
-
-  LINE_BLOCKED: {
-    lineType: "row" | "col";
-    index: number;
   };
 }

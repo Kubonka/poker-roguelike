@@ -116,10 +116,7 @@ export class PokerHandEvaluator {
             usedValues.add(possible[0]);
           }
 
-          if (valid) {
-            console.log("IS ONE PAIR ", valid);
-            return true;
-          }
+          if (valid) return true;
         }
       }
     }
