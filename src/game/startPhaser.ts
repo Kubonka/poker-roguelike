@@ -16,7 +16,7 @@ export async function startPhaser(
   const gameLogic = new Game();
 
   const game = new Phaser.Game({
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,
     parent: container,
     width: 1600,
     height: 900,
