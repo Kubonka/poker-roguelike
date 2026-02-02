@@ -4,7 +4,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.svg("card-bg", "/suits/cardBg.svg", {
+    this.load.svg("card-bg", "/suits/bg.svg", {
       width: 500,
       height: 700,
     });
