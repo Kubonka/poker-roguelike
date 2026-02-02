@@ -22,7 +22,7 @@ export async function startPhaser(
     height: 900,
     scene: [BootScene, PlayScene],
   });
-
+  //*A VER SI ANDA
   game.registry.set("bus", gameLogic.bus);
 
   window.__PHASER_GAME__ = game;
