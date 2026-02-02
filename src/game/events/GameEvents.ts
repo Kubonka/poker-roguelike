@@ -9,4 +9,5 @@ export interface GameEvents {
   };
   DECK_RESHUFFLED: void;
   TEST_COMPLETE: undefined;
+  TURN_END: undefined;
 }
