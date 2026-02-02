@@ -1,4 +1,3 @@
-"use client";
 import { Board } from "../board/Board";
 import { Card } from "../cards/Card";
 import { Deck } from "../cards/Deck";
@@ -45,7 +44,8 @@ export class PlayScene extends Phaser.Scene {
     //this.scoreSystem = new ScoreSystem(this.bus,); //todo seguir por aca
     new UiLayer(this, this.bus);
     //!TEST
-    this.testSystem = new TestScoresSystem();
+    this.testSystem = new TestScoresSystem(this.bus);
+    this.testSystem.initStorage();
     this.deck.draw();
   }
 

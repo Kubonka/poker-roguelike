@@ -1,4 +1,3 @@
-"use client";
 export async function startPhaser(
   container: HTMLElement,
 ): Promise<Phaser.Game | null> {
