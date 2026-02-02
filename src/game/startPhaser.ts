@@ -20,8 +20,10 @@ export async function startPhaser(
     parent: container,
     width: 1600,
     height: 900,
-    scene: [BootScene, new PlayScene(gameLogic.bus)],
+    scene: [BootScene, PlayScene],
   });
+
+  game.registry.set("bus", gameLogic.bus);
 
   window.__PHASER_GAME__ = game;
 

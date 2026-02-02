@@ -10,6 +10,7 @@ import { ValidationSystem } from "../systems/ValidationSystem";
 import { UiLayer } from "../ui/UiLayer";
 
 export class PlayScene extends Phaser.Scene {
+  private bus!: EventBus<GameEventMap>;
   private board!: Board;
   private deck!: Deck;
   private currentCard: Card | null = null;
@@ -18,41 +19,78 @@ export class PlayScene extends Phaser.Scene {
   private scoreSystem!: ScoreSystem;
   private testSystem!: TestScoresSystem;
 
-  constructor(private bus: EventBus<GameEventMap>) {
+  constructor() {
     super("PlayScene");
-    //this.bus.on("CARD_DRAWN", (payload) => (this.currentCard = payload.card));
-    this.bus.on("CARD_PLACED", () => {
-      this.deck.draw();
-    });
-    this.bus.on("LINE_COMPLETED", this.handleLineCompleted);
-    this.bus.on("SCORE_ADDED", ({ amount, total, source }) => {
-      console.log(`+${amount} (${source}) → total: ${total}`);
-    });
-    //!test
-    this.bus.on("TEST_COMPLETE", () => this.scene.restart());
   }
+  // constructor() {
+  //   super("PlayScene");
+  //   //this.bus.on("CARD_DRAWN", (payload) => (this.currentCard = payload.card));
+  //   this.bus.on("CARD_PLACED", () => {
+  //     this.deck.draw();
+  //   });
+  //   this.bus.on("LINE_COMPLETED", this.handleLineCompleted);
+  //   this.bus.on("SCORE_ADDED", ({ amount, total, source }) => {
+  //     console.log(`+${amount} (${source}) → total: ${total}`);
+  //   });
+  //   //!test
+  //   this.bus.on("TEST_COMPLETE", () => this.scene.restart());
+
+  //   //*
+  // }
 
   create() {
     const initialX = 400;
     const initialY = 30;
 
     this.deck = new Deck(this, this.bus, -50, -50);
-    console.log("ENTRA");
     this.board = new Board(this, this.bus, initialX, initialY, 5, 5, this.deck);
+
     this.placementSystem = new PlacementSystem(this.bus, this.board, this.deck);
     this.validationSystem = new ValidationSystem(this.bus, this.board);
-    //this.scoreSystem = new ScoreSystem(this.bus,); //todo seguir por aca
+
     new UiLayer(this, this.bus);
-    //!TEST
+
     this.testSystem = new TestScoresSystem(this.bus);
     this.testSystem.initStorage();
+
     this.deck.draw();
   }
+  // create() {
+  //   const initialX = 400;
+  //   const initialY = 30;
+
+  //   this.deck = new Deck(this, this.bus, -50, -50);
+  //   console.log("ENTRA");
+  //   this.board = new Board(this, this.bus, initialX, initialY, 5, 5, this.deck);
+  //   this.placementSystem = new PlacementSystem(this.bus, this.board, this.deck);
+  //   this.validationSystem = new ValidationSystem(this.bus, this.board);
+  //   //this.scoreSystem = new ScoreSystem(this.bus,); //todo seguir por aca
+  //   new UiLayer(this, this.bus);
+  //   //!TEST
+  //   this.testSystem = new TestScoresSystem(this.bus);
+  //   this.testSystem.initStorage();
+  //   this.deck.draw();
+  // }
 
   shutdown() {
     this.bus.off("LINE_COMPLETED", this.handleLineCompleted);
   }
 
+  init(data: { bus: EventBus<GameEventMap> }) {
+    this.bus = data.bus;
+
+    this.bus.on("CARD_PLACED", () => {
+      this.deck.draw();
+    });
+
+    this.bus.on("LINE_COMPLETED", this.handleLineCompleted);
+
+    this.bus.on("SCORE_ADDED", ({ amount, total, source }) => {
+      console.log(`+${amount} (${source}) → total: ${total}`);
+    });
+
+    this.bus.on("TEST_COMPLETE", () => this.scene.restart());
+  }
   private handleLineCompleted = (payload: GameEventMap["LINE_COMPLETED"]) => {
     const { lineType, index, rank } = payload;
     //! ACA VA DE TODO

@@ -28,7 +28,6 @@ export class NextCardPreview extends Phaser.GameObjects.Container {
   public setPreviewCard(card: Card) {
     if (this.previewCard) {
       this.remove(this.previewCard);
-      console.log("REMOVE");
     }
     this.previewCard = card;
     this.previewCard.setPosition(this.x, this.y);

@@ -1,5 +1,3 @@
-import * as Phaser from "phaser";
-
 export class BootScene extends Phaser.Scene {
   constructor() {
     super("BootScene");
@@ -32,6 +30,8 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("PlayScene");
+    this.scene.start("PlayScene", {
+      bus: this.registry.get("bus"),
+    });
   }
 }

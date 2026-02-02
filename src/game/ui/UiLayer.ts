@@ -22,7 +22,6 @@ export class UiLayer extends Phaser.GameObjects.Container {
 
     this.add([this.lineResultBanner, this.nextCardPreview]);
     this.bus.on("CARD_DRAWN", ({ card }) => {
-      console.log("1");
       this.nextCardPreview.setPreviewCard(card);
     });
   }
