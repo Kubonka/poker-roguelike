@@ -14,11 +14,11 @@ export class Game {
     this.bus = new EventBus<GameEventMap>();
   }
 
-  createPhaserGame(container: HTMLElement) {
-    return new Phaser.Game({
-      type: Phaser.AUTO,
-      parent: container,
-      scene: [BootScene, new PlayScene(this.bus)],
-    });
-  }
+  // createPhaserGame(container: HTMLElement) {
+  //   return new Phaser.Game({
+  //     type: Phaser.AUTO,
+  //     parent: container,
+  //     scene: [BootScene, PlayScene],
+  //   });
+  // }
 }
