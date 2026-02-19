@@ -23,5 +23,5 @@ export class PlayerDisplay extends Phaser.GameObjects.Container {
       this.updateHealthBar(payload.hitPoints, payload.damage),
     );
   }
-  private updateHealthBar(hitPoints, damage) {}
+  private updateHealthBar(hitPoints: number, damage: number) {}
 }
