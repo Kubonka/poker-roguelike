@@ -1,6 +1,7 @@
 import { Card } from "../cards/Card";
 import { EventBus } from "../core/EventBus";
 import { GameEventMap } from "../events/GameEventMap";
+import { BoardLayoutConfig } from "../ui/layout/BoardLayoutConfig";
 
 export class Cell extends Phaser.GameObjects.Container {
   card: Card | null = null;
@@ -12,25 +13,25 @@ export class Cell extends Phaser.GameObjects.Container {
     private bus: EventBus<GameEventMap>,
     row: number,
     col: number,
-    x: number,
-    y: number,
+    private layout: BoardLayoutConfig,
   ) {
     super(scene, 0, 0);
     scene.add.existing(this);
+
     this.row = row;
     this.col = col;
+
     this.bgSprite = scene.add.sprite(0, 0, "card-bg");
-    this.bgSprite.setOrigin(0, 0);
-    this.bgSprite.setScale(0.26, 0.24);
-    const offsetX = 15;
-    const offsetY = 13;
-    this.bgSprite.setPosition(x - offsetX, y - offsetY);
-    this.bgSprite.setTint(120);
-    this.add(this.bgSprite);
+    this.bgSprite.setOrigin(0);
+    this.bgSprite.setDisplaySize(layout.cellWidth, layout.cellHeight);
+    this.bgSprite.setTint(0x777777);
+
     this.bgSprite.setInteractive();
-    this.bgSprite.on("pointerdown", () => {
-      bus.emit("CELL_CLICKED", { cell: this });
-    });
+    this.bgSprite.on("pointerdown", () =>
+      bus.emit("CELL_CLICKED", { cell: this }),
+    );
+
+    this.add(this.bgSprite);
   }
 
   removeCard() {

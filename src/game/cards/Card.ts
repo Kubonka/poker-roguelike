@@ -1,5 +1,8 @@
 import { Cell } from "../board/Cell";
-
+const CARD_SIZE = {
+  width: 90,
+  height: 130,
+};
 export class Card extends Phaser.GameObjects.Container {
   private static nextId = 0;
   public readonly cardId: number = -1;
@@ -10,27 +13,20 @@ export class Card extends Phaser.GameObjects.Container {
   private bgSprite: Phaser.GameObjects.Sprite;
   private valueText: Phaser.GameObjects.Text[] = [];
   private suitSprite: Phaser.GameObjects.Sprite[] = [];
+  private modifier: HandModifier | null = null;
   //mvp 2 > add TAG
   //tagImg:Phaser.GameObjects.Sprite;
   //tag:string
   constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y);
-    // //*ID
-    this.cardId = Card.nextId++;
-    // //*BG
-    this.bgSprite = scene.add.sprite(0, 0, "card-bg");
-    this.bgSprite.setOrigin(0, 0);
-    this.bgSprite.setScale(0.2, 0.2);
-    this.bgSprite.setPosition(0, 0);
-    this.add([this.bgSprite]); //mvp 2 > add TAG
-    // //*SUIT
-    //this.setSuit([]);
-    // //*VALUE
-    //this.setValue(initialValue);
-
-    this.setInteractive();
-
+    super(scene, 0, 0);
     scene.add.existing(this);
+
+    this.cardId = Card.nextId++;
+    this.bgSprite = scene.add.sprite(0, 0, "card-bg");
+    this.bgSprite.setOrigin(0);
+    this.bgSprite.setDisplaySize(CARD_SIZE.width, CARD_SIZE.height);
+
+    this.add(this.bgSprite);
   }
 
   private valueToString(value: number): string {
@@ -76,7 +72,7 @@ export class Card extends Phaser.GameObjects.Container {
     this.setValueText();
   }
   private setValueText() {
-    const baseX = 5;
+    const baseX = 0;
     const baseY = 55;
     const centerOffset = 35;
     if (this.value.length === 1) {
@@ -144,12 +140,10 @@ export class Card extends Phaser.GameObjects.Container {
       this.add(this.suitSprite[i]);
     });
   }
-  public moveToCell(cell: Cell) {
-    const { x, y } = cell.getCenterWorldPosition();
-    const xOffset = -50;
-    const yOffset = -70;
 
-    this.setPosition(x + xOffset, y + yOffset);
+  moveToCell(cell: Cell) {
+    const { x, y } = cell.getCenterWorldPosition();
+    this.setPosition(x - CARD_SIZE.width / 2, y - CARD_SIZE.height / 2);
   }
   public moveToDiscardPile({ x, y }: Coord) {
     this.setPosition(x, y);

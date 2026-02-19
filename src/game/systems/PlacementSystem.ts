@@ -5,12 +5,14 @@ import { Card } from "../cards/Card";
 import { ValidationSystem } from "./ValidationSystem";
 import { Cell } from "../board/Cell";
 import { Deck } from "../cards/Deck";
+import { TurnSystem } from "./TurnSystem";
 
 export class PlacementSystem {
   constructor(
     private readonly bus: EventBus<GameEventMap>,
     private readonly board: Board,
     private readonly deck: Deck,
+    private readonly turnSystem: TurnSystem,
   ) {
     this.bus.on("CELL_CLICKED", this.onCellClicked);
   }
@@ -18,6 +20,7 @@ export class PlacementSystem {
   //   this.currentCard = card;
   // }
   private onCellClicked = (payload: { cell: Cell }) => {
+    if (this.turnSystem.getState() !== "PLAYER_TURN") return;
     const cell = payload.cell;
     const card = this.deck.currentCard;
     if (!card) return;

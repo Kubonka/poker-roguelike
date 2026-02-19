@@ -20,6 +20,7 @@ export async function startPhaser(
     parent: container,
     width: 1600,
     height: 900,
+    backgroundColor: "#505050",
     scene: [BootScene, PlayScene],
   });
   //*A VER SI ANDA

@@ -32,7 +32,6 @@ export class NextCardPreview extends Phaser.GameObjects.Container {
     this.previewCard = card;
     this.previewCard.setPosition(this.x, this.y);
     this.add(this.previewCard);
-    console.log("1");
   }
 
   /** Lógica interna de render */

@@ -18,17 +18,22 @@ export class ValidationSystem {
     const rowCards: Card[] = this.board
       .getRow(row)
       .map((c) => c.card) as Card[];
+
     const colCards: Card[] = this.board
       .getCol(col)
       .map((c) => c.card) as Card[];
 
+    let lineCompleted = false;
     if (rowCards.length === 5) {
       const resultRow = this.solvePokerHand(rowCards);
+
       this.bus.emit("LINE_COMPLETED", {
         lineType: "row",
         index: row,
         rank: resultRow,
       });
+
+      if (resultRow !== "high_card") lineCompleted = true;
     }
     if (colCards.length === 5) {
       const resultCol = this.solvePokerHand(colCards);
@@ -38,7 +43,10 @@ export class ValidationSystem {
         index: col,
         rank: resultCol,
       });
+
+      if (resultCol !== "high_card") lineCompleted = true;
     }
+    if (!lineCompleted) this.bus.emit("LINE_NOT_COMPLETED", undefined);
   }
 
   private solvePokerHand(cards: Card[]): PokerRank {
