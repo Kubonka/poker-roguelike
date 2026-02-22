@@ -14,17 +14,52 @@ export class ValidationSystem {
   // static canPlace(): boolean {
   //   return Cell.isEmpty();
   // }
+  // public checkLine(row: number, col: number) {
+  //   const rowCards: Card[] = this.board
+  //     .getRow(row)
+  //     .map((c) => c.card) as Card[];
+
+  //   const colCards: Card[] = this.board
+  //     .getCol(col)
+  //     .map((c) => c.card) as Card[];
+
+  //   let lineCompleted = false;
+  //   if (rowCards.length === 5) {
+  //     const resultRow = this.solvePokerHand(rowCards);
+
+  //     this.bus.emit("LINE_COMPLETED", {
+  //       lineType: "row",
+  //       index: row,
+  //       rank: resultRow,
+  //     });
+
+  //     if (resultRow !== "high_card") lineCompleted = true;
+  //   }
+  //   if (colCards.length === 5) {
+  //     const resultCol = this.solvePokerHand(colCards);
+
+  //     this.bus.emit("LINE_COMPLETED", {
+  //       lineType: "col",
+  //       index: col,
+  //       rank: resultCol,
+  //     });
+
+  //     if (resultCol !== "high_card") lineCompleted = true;
+  //   }
+  //   if (!lineCompleted) this.bus.emit("LINE_NOT_COMPLETED", undefined);
+  // }
   public checkLine(row: number, col: number) {
     const rowCards: Card[] = this.board
       .getRow(row)
       .map((c) => c.card) as Card[];
-
     const colCards: Card[] = this.board
       .getCol(col)
       .map((c) => c.card) as Card[];
 
-    let lineCompleted = false;
+    let anyLineFull = false;
+
     if (rowCards.length === 5) {
+      anyLineFull = true;
       const resultRow = this.solvePokerHand(rowCards);
 
       this.bus.emit("LINE_COMPLETED", {
@@ -32,10 +67,10 @@ export class ValidationSystem {
         index: row,
         rank: resultRow,
       });
-
-      if (resultRow !== "high_card") lineCompleted = true;
     }
+
     if (colCards.length === 5) {
+      anyLineFull = true;
       const resultCol = this.solvePokerHand(colCards);
 
       this.bus.emit("LINE_COMPLETED", {
@@ -43,10 +78,11 @@ export class ValidationSystem {
         index: col,
         rank: resultCol,
       });
-
-      if (resultCol !== "high_card") lineCompleted = true;
     }
-    if (!lineCompleted) this.bus.emit("LINE_NOT_COMPLETED", undefined);
+
+    if (!anyLineFull) {
+      this.bus.emit("LINE_NOT_COMPLETED", undefined);
+    }
   }
 
   private solvePokerHand(cards: Card[]): PokerRank {

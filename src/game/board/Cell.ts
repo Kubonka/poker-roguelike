@@ -21,7 +21,7 @@ export class Cell extends Phaser.GameObjects.Container {
     this.row = row;
     this.col = col;
 
-    this.bgSprite = scene.add.sprite(0, 0, "card-bg");
+    this.bgSprite = scene.add.sprite(0, 0, "card_bg");
     this.bgSprite.setOrigin(0);
     this.bgSprite.setDisplaySize(layout.cellWidth, layout.cellHeight);
     this.bgSprite.setTint(0x777777);

@@ -3,7 +3,9 @@ import { Card } from "../cards/Card";
 import { Deck } from "../cards/Deck";
 import { EventBus } from "../core/EventBus";
 import { ScoreTableSim } from "../core/ScoreStrategySim";
+import { Enemy } from "../enemy/Enemy";
 import { GameEventMap } from "../events/GameEventMap";
+import { Player } from "../player/Player";
 import { PlacementSystem } from "../systems/PlacementSystem";
 import { ScoreSystem } from "../systems/ScoreSystem";
 import { TestScoresSystem } from "../systems/TestScoresSystem";
@@ -25,32 +27,17 @@ export class PlayScene extends Phaser.Scene {
   private scoreSystem!: ScoreSystem;
   private turnSystem!: TurnSystem;
   private testSystem!: TestScoresSystem;
-
+  private player!: Player;
+  private enemy!: Enemy;
   constructor() {
     super("PlayScene");
   }
-  // constructor() {
-  //   super("PlayScene");
-  //   //this.bus.on("CARD_DRAWN", (payload) => (this.currentCard = payload.card));
-  //   this.bus.on("CARD_PLACED", () => {
-  //     this.deck.draw();
-  //   });
-  //   this.bus.on("LINE_COMPLETED", this.handleLineCompleted);
-  //   this.bus.on("SCORE_ADDED", ({ amount, total, source }) => {
-  //     console.log(`+${amount} (${source}) → total: ${total}`);
-  //   });
-  //   //!test
-  //   this.bus.on("TEST_COMPLETE", () => this.scene.restart());
-
-  //   //*
-  // }
 
   create() {
     this.bus.on("TEST_COMPLETE", () => this.scene.restart());
     const initialX = 500;
     const initialY = 120;
     this.deck = new Deck(this, this.bus, -150, -150);
-
     this.board = new Board(
       this,
       this.bus,
@@ -61,6 +48,10 @@ export class PlayScene extends Phaser.Scene {
       BOARD_LAYOUT,
       this.deck,
     );
+    this.validationSystem = new ValidationSystem(this.bus, this.board);
+    this.scoreSystem = new ScoreSystem(this.bus, this.board);
+    this.player = new Player(this, this.bus, 0, 300);
+    this.enemy = new Enemy(this, this.bus, 900, 300);
     this.turnSystem = new TurnSystem(this.bus);
     this.placementSystem = new PlacementSystem(
       this.bus,
@@ -68,13 +59,15 @@ export class PlayScene extends Phaser.Scene {
       this.deck,
       this.turnSystem,
     );
-    this.validationSystem = new ValidationSystem(this.bus, this.board);
-    this.scoreSystem = new ScoreSystem(this.bus, this.board);
     new UiLayer(this, this.bus);
-    this.deck.draw();
     this.time.delayedCall(0, () => {
       this.board.setUpBoard();
     });
+    this.deck.draw();
+    this.bus.emit("UPDATE_PLAYER", { player: this.player });
+    this.bus.emit("ENEMY_DAMAGED", { enemy: this.enemy, damage: 0 });
+    this.bus.emit("UPDATE_ENEMY", { enemy: this.enemy });
+    //*BEGIN
 
     //! TEST
     this.testSystem = new TestScoresSystem(this.bus);

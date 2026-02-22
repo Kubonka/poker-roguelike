@@ -22,6 +22,15 @@ export class Deck extends Phaser.GameObjects.Container {
       this.handleCardRemoved(payload.card),
     );
   }
+  public discardCards(count: number): Card[] {
+    const result: Card[] = [];
+    for (let i = 0; i < count; i++) {
+      const card = this.drawPile.pop();
+      result.push(card as Card);
+      this.handleCardRemoved(card as Card);
+    }
+    return result;
+  }
   private initCards() {
     const suits: CardSuit[] = ["clubs", "diamonds", "hearts", "spades"];
     const values: CardValue[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
@@ -43,27 +52,7 @@ export class Deck extends Phaser.GameObjects.Container {
     this.discardPile.push(card);
     card.moveToDiscardPile(this.discardPilePos);
   }
-  // public draw(): Card {
-  //   console.log("count : ", this.drawPile.length);
-  //   if (this.drawPile.length === 0) {
-  //     console.log("entra reshufle");
-  //     this.reShuffle();
-  //     console.log("sale reshufle");
-  //   }
-  //   const card: Card = this.drawPile.pop() as Card;
-  //   console.log("- * -", this.drawPile[this.drawPile.length - 1].value);
-  //   if (card) {
-  //     console.log("EMIT");
-  //     this.bus.emit("CARD_DRAWN", { card: card });
-  //     console.log("EMIT2");
-  //   }
-  //   return card;
-  // }
-  // public consumeCurrentCard(): Card | null {
-  //   const card = this.currentCard;
-  //   this.currentCard = null;
-  //   return card;
-  // }
+
   public draw() {
     //const card = new Card(this.scene, 0, 0);
     if (!this.drawPile.length) {

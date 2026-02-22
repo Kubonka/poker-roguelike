@@ -22,7 +22,7 @@ export class Card extends Phaser.GameObjects.Container {
     scene.add.existing(this);
 
     this.cardId = Card.nextId++;
-    this.bgSprite = scene.add.sprite(0, 0, "card-bg");
+    this.bgSprite = scene.add.sprite(0, 0, "card_bg");
     this.bgSprite.setOrigin(0);
     this.bgSprite.setDisplaySize(CARD_SIZE.width, CARD_SIZE.height);
 
@@ -132,7 +132,7 @@ export class Card extends Phaser.GameObjects.Container {
     suits.forEach((val, i) => {
       this.suit[i] = val;
       if (!this.suitSprite[i]) {
-        this.suitSprite[i] = this.scene.add.sprite(0, 0, `suit-${val}`);
+        this.suitSprite[i] = this.scene.add.sprite(0, 0, `suit_${val}`);
         this.suitSprite[i].setOrigin(0, 0);
         this.suitSprite[i].setScale(0.05, 0.05);
       }
@@ -142,8 +142,15 @@ export class Card extends Phaser.GameObjects.Container {
   }
 
   moveToCell(cell: Cell) {
-    const { x, y } = cell.getCenterWorldPosition();
-    this.setPosition(x - CARD_SIZE.width / 2, y - CARD_SIZE.height / 2);
+    const world = cell.getCenterWorldPosition();
+
+    const local = this.parentContainer!.getLocalPoint(world.x, world.y);
+    //const { x, y } = cell.getCenterWorldPosition();
+
+    this.setPosition(
+      local.x - CARD_SIZE.width / 2,
+      local.y - CARD_SIZE.height / 2,
+    );
   }
   public moveToDiscardPile({ x, y }: Coord) {
     this.setPosition(x, y);

@@ -38,8 +38,8 @@ export class Board extends Phaser.GameObjects.Container {
         const x = col * (this.layout.cellWidth + this.layout.spacingX);
         const y = row * (this.layout.cellHeight + this.layout.spacingY);
         const cell = new Cell(this.scene, this.bus, row, col, this.layout);
-        cell.setPosition(x, y);
         this.add(cell);
+        cell.setPosition(x, y);
         this.cells[row][col] = cell;
       }
     }
@@ -59,10 +59,12 @@ export class Board extends Phaser.GameObjects.Container {
       { row: 3, col: 1 },
       { row: 4, col: 0 },
     ];
+    //!
+    const discardedCards = this.deck.discardCards(9);
     for (const pos of positions) {
-      this.bus.emit("CELL_CLICKED", {
-        cell: this.cells[pos.row][pos.col],
-      });
+      const cell = this.cells[pos.row][pos.col];
+      const card = discardedCards.pop() as Card;
+      this.placeCard(card, cell);
 
       await new Promise((r) => setTimeout(r, 100));
     }
@@ -84,42 +86,6 @@ export class Board extends Phaser.GameObjects.Container {
     return entries[entries.length - 1][0];
   }
 
-  // private createLineModifier(
-  //   index: number,
-  //   lineType: LineType,
-  //   sign: ModifierSign,
-  // ) {
-  //   const key = this.lmKey(lineType, index);
-
-  //   if (this.lineModifiers.has(key)) return;
-
-  //   let x = 0;
-  //   let y = 0;
-
-  //   if (lineType === "row") {
-  //     x = index * (this.layout.cellWidth + this.layout.spacingX);
-  //     y = -this.layout.cellHeight * 0.9;
-  //   } else {
-  //     x = -this.layout.cellWidth * 1.1;
-  //     y = index * (this.layout.cellHeight + this.layout.spacingY);
-  //   }
-
-  //   const rndRank = this.weightedRandom(POKER_RANK_WEIGHTS);
-
-  //   const lm = new LineModifier(
-  //     this.scene,
-  //     x,
-  //     y,
-  //     lineType,
-  //     index,
-  //     rndRank,
-  //     0.5,
-  //     sign,
-  //   );
-
-  //   this.lineModifiers.set(key, lm);
-  //   this.add(lm);
-  // }
   private createLineModifier(
     index: number,
     lineType: LineType,
@@ -182,43 +148,7 @@ export class Board extends Phaser.GameObjects.Container {
 
     this.createLineModifier(index, lineType, lineModifier.sign);
   }
-  // private findCandidateLines(): { lineType: LineType; index: number }[] {
-  //   //todo recorrer  de 0 a 4 todas las rows y todas las cols y ver si encuentro en this.lineModfiers
-  //   //todo   -> si la encuentro no cuenta, si no la encuentro es un index candidato
-  //   const candidates: { lineType: LineType; index: number }[] = [];
-  //   for (let j = 0; j < this.cells[0].length; j++) {
-  //     const found = this.lineModifiers.find(
-  //       (lm) => lm.index === j && lm.lineType === "col",
-  //     );
-  //     if (found) candidates.push({ index: j, lineType: "col" });
-  //   }
-  //   for (let i = 0; i < this.cells.length; i++) {
-  //     const found = this.lineModifiers.find(
-  //       (lm) => lm.index === i && lm.lineType === "row",
-  //     );
-  //     if (found) candidates.push({ index: i, lineType: "row" });
-  //   }
-  //   return candidates;
-  // }
-  // private findCandidateLines(): { lineType: LineType; index: number }[] {
-  //   const candidates: { lineType: LineType; index: number }[] = [];
 
-  //   for (let j = 0; j < this.cells[0].length; j++) {
-  //     const found = this.lineModifiers.find(
-  //       (lm) => lm.index === j && lm.lineType === "col",
-  //     );
-  //     if (!found) candidates.push({ index: j, lineType: "col" });
-  //   }
-
-  //   for (let i = 0; i < this.cells.length; i++) {
-  //     const found = this.lineModifiers.find(
-  //       (lm) => lm.index === i && lm.lineType === "row",
-  //     );
-  //     if (!found) candidates.push({ index: i, lineType: "row" });
-  //   }
-
-  //   return candidates;
-  // }
   private findCandidateLines(): { lineType: LineType; index: number }[] {
     const candidates: { lineType: LineType; index: number }[] = [];
 
@@ -245,8 +175,13 @@ export class Board extends Phaser.GameObjects.Container {
     }
   }
   placeCard(card: Card, cell: Cell) {
-    card.moveToCell(cell);
+    this.add(card); // misma jerarquía que las cells
     cell.setCard(card);
+    card.moveToCell(cell);
+    //! OJO ACA
+    //card.moveToCell(cell);
+    //this.bringToTop(card); // garantiza orden de render
+    //cell.setCard(card);
   }
   public getRow(row: number): Cell[] {
     const result: Cell[] = [];
@@ -278,22 +213,7 @@ export class Board extends Phaser.GameObjects.Container {
   private lmKey(lineType: LineType, index: number): string {
     return `${lineType}:${index}`;
   }
-  // public getLineModifier(
-  //   lineType: LineType,
-  //   index: number,
-  // ): LineModifier | null {
-  //   return (
-  //     this.lineModifiers.find(
-  //       (lm) => lm.lineType === lineType && lm.index === index,
-  //     ) ?? null
-  //   );
-  // }
-  // public getLineModifier(
-  //   lineType: LineType,
-  //   index: number,
-  // ): LineModifier | null {
-  //   return this.lineModifiers.get(this.lmKey(lineType, index)) ?? null;
-  // }
+
   public getLineModifier(
     lineType: LineType,
     index: number,

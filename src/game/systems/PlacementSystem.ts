@@ -20,6 +20,7 @@ export class PlacementSystem {
   //   this.currentCard = card;
   // }
   private onCellClicked = (payload: { cell: Cell }) => {
+    console.log("3", this.turnSystem.getState());
     if (this.turnSystem.getState() !== "PLAYER_TURN") return;
     const cell = payload.cell;
     const card = this.deck.currentCard;

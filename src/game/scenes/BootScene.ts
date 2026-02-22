@@ -5,27 +5,27 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     //* BACKGROUND  Y FOREGROUND
-    this.load.svg("card-bg", "/suits/bg.svg", {
+    this.load.svg("card_bg", "/suits/bg.svg", {
       width: 500,
       height: 700,
     });
     //* PALOS
-    this.load.svg("suit-clubs", "/suits/club.svg", {
+    this.load.svg("suit_clubs", "/suits/club.svg", {
       width: 512,
       height: 512,
     });
 
-    this.load.svg("suit-spades", "/suits/spade.svg", {
+    this.load.svg("suit_spades", "/suits/spade.svg", {
       width: 512,
       height: 512,
     });
 
-    this.load.svg("suit-hearts", "/suits/heart.svg", {
+    this.load.svg("suit_hearts", "/suits/heart.svg", {
       width: 512,
       height: 512,
     });
 
-    this.load.svg("suit-diamonds", "/suits/diamond.svg", {
+    this.load.svg("suit_diamonds", "/suits/diamond.svg", {
       width: 512,
       height: 512,
     });
@@ -70,6 +70,14 @@ export class BootScene extends Phaser.Scene {
         height: 512,
       },
     );
+    this.load.svg("hourglass_icon", "/hud/hourglass-icon.svg", {
+      width: 40,
+      height: 40,
+    });
+    this.load.svg("attack_icon", "/hud/attack-icon.svg", {
+      width: 75,
+      height: 75,
+    });
   }
 
   create() {
