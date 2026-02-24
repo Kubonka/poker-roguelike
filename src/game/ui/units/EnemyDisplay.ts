@@ -1,4 +1,5 @@
 import { EventBus } from "@/game/core/EventBus";
+import { Enemy } from "@/game/enemy/Enemy";
 import { EnemySkill } from "@/game/enemy/EnemySkill";
 import { GameEventMap } from "@/game/events/GameEventMap";
 
@@ -19,7 +20,7 @@ export class EnemyDisplay extends Phaser.GameObjects.Container {
     this.bus = bus;
     this.skillDisplay = new EnemySkillDisplay(this.scene, this.bus, -40, 20);
     this.enemyName = scene.add
-      .text(20, -60, "ENEMY", {
+      .text(20, -60, `ENEMY lvl ${1}}`, {
         fontSize: "40px",
         color: "#ffd700",
       })
@@ -45,6 +46,13 @@ export class EnemyDisplay extends Phaser.GameObjects.Container {
     this.bus.on("ENEMY_DAMAGED", (payload) =>
       this.updateHealthBar(payload.enemy.hitPoints, payload.damage),
     );
+    this.bus.on("UPDATE_ENEMY", (payload) => {
+      this.updateName(payload.enemy);
+      this.updateHealthBar(payload.enemy.hitPoints, 0);
+    });
+  }
+  private updateName(enemy: Enemy) {
+    this.enemyName.setText(`ENEMY lvl ${enemy.enemyLvl.toString()}`);
   }
   private updateHealthBar(hitPoints: number, damage: number) {
     //console.log("hitPoints", hitPoints);
@@ -72,7 +80,6 @@ class EnemySkillDisplay extends Phaser.GameObjects.Container {
   ) {
     super(scene, x, y);
     this.bus = bus;
-
     this.timeToCastSprite = scene.add.sprite(-57, 0, "hourglass_icon");
     this.damageSprite = scene.add.sprite(-40, 60, "attack_icon");
     this.timeToCast = scene.add
@@ -87,20 +94,15 @@ class EnemySkillDisplay extends Phaser.GameObjects.Container {
         color: "#ffd700",
       })
       .setOrigin(0.5);
-
     this.add([
       this.timeToCast,
       this.damage,
       this.damageSprite,
       this.timeToCastSprite,
     ]);
-
     this.bus.on("UPDATE_ENEMY", (payload) =>
       this.updateEnemySkill(payload.enemy.currentSkill),
     );
-    //this.bus.on("ENEMY_DAMAGED", (payload) =>
-    //  this.updateEnemySkill(payload.enemy.currentSkill),
-    //);
   }
   private updateEnemySkill(skill: EnemySkill | null) {
     console.log("skill updated", skill);

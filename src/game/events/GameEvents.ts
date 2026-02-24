@@ -28,5 +28,6 @@ export interface GameEvents {
 
   PLAYER_DAMAGED: { hitPoints: number; damage: number };
   ENEMY_DAMAGED: { enemy: Enemy; damage: number };
+  ENEMY_DEAD: void;
   ENEMY_SKILL_USED: { skill: EnemySkill };
 }

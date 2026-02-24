@@ -29,12 +29,21 @@ export class PlayScene extends Phaser.Scene {
   private testSystem!: TestScoresSystem;
   private player!: Player;
   private enemy!: Enemy;
+  private enemyLvl: number = 1;
   constructor() {
     super("PlayScene");
   }
 
   create() {
     this.bus.on("TEST_COMPLETE", () => this.scene.restart());
+    this.bus.on("PLAYER_TURN_STARTED", () => {
+      if (this.enemy.hitPoints <= 0) {
+        this.enemyLvl++;
+        this.enemy = new Enemy(this, this.bus, 900, 300, this.enemyLvl);
+
+        this.bus.emit("UPDATE_ENEMY", { enemy: this.enemy });
+      }
+    });
     const initialX = 500;
     const initialY = 120;
     this.deck = new Deck(this, this.bus, -150, -150);
@@ -51,7 +60,7 @@ export class PlayScene extends Phaser.Scene {
     this.validationSystem = new ValidationSystem(this.bus, this.board);
     this.scoreSystem = new ScoreSystem(this.bus, this.board);
     this.player = new Player(this, this.bus, 0, 300);
-    this.enemy = new Enemy(this, this.bus, 900, 300);
+    this.enemy = new Enemy(this, this.bus, 900, 300, this.enemyLvl);
     this.turnSystem = new TurnSystem(this.bus);
     this.placementSystem = new PlacementSystem(
       this.bus,
